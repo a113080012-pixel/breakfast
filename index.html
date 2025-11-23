@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夏白早餐店 - 享受美好的早晨時光</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJg1dJmQZkI8b8rF2lE0q/lCgU6D0m9t/fPqY3i5WnJjRkI3T0E8XgJ9c5Q=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        /* 定義莫蘭迪色系 */
+        :root {
+            --color-primary: #9CAEA9;
+            /* 莫蘭迪灰綠 */
+            --color-secondary: #C9A7A7;
+            /* 莫蘭迪灰粉 */
+            --color-background: #f8f8f8;
+            /* 淺灰米白 */
+            --color-text-dark: #333333;
+        }
+
+        /* 自定義背景紋理 - 使用 Base64 或外部圖片 */
+        /* 這裡使用一個輕微的點狀圖案作為佔位符，您可以替換成更優雅的紋理圖片 */
+        .textured-bg {
+            background-image: url(img/xv.png);
+            background-repeat: repeat;
+        }
+
+        /* 菜單展開 CSS 調整：使用 max-height 搭配 transition 實現展開收合動畫 */
+        .menu-detail {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.7s ease-in-out;
+        }
+
+        .menu-card:hover .menu-detail {
+            max-height: 550px;
+            /* 需足夠大以容納所有菜單項 */
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': 'var(--color-primary)',
+                        'secondary': 'var(--color-secondary)',
+                        'background': 'var(--color-background)',
+                        'text-dark': 'var(--color-text-dark)',
+                    },
+                    fontFamily: {
+                        sans: ['Noto Sans TC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-background textured-bg font-sans text-text-dark antialiased">
+
+    <header id="navbar" class="fixed w-full z-50 bg-background/90 backdrop-blur-sm shadow-lg transition duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+            <a href="#hero" class="text-2xl font-bold text-primary hover:text-secondary transition">夏白 早餐店</a>
+
+            <nav class="hidden md:flex space-x-8">
+                <a href="#menu" class="text-base font-medium hover:text-primary transition">菜單</a>
+                <a href="#recommend" class="text-base font-medium hover:text-primary transition">熱門推薦</a>
+                <a href="#about" class="text-base font-medium hover:text-primary transition">關於我們</a>
+                <a href="#contact" class="text-base font-medium hover:text-primary transition">聯絡我們</a>
+            </nav>
+
+            <button id="menu-button" class="md:hidden text-text-dark hover:text-primary p-2 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7">
+                    </path>
+                </svg>
+            </button>
+        </div>
+
+        <div id="mobile-menu" class="hidden md:hidden bg-background shadow-lg">
+            <nav class="px-2 pt-2 pb-3 space-y-1">
+                <a href="#menu"
+                    class="block px-3 py-2 rounded-md text-base font-medium hover:bg-secondary/50 transition">菜單</a>
+                <a href="#recommend"
+                    class="block px-3 py-2 rounded-md text-base font-medium hover:bg-secondary/50 transition">熱門推薦</a>
+                <a href="#about"
+                    class="block px-3 py-2 rounded-md text-base font-medium hover:bg-secondary/50 transition">關於我們</a>
+                <a href="#contact"
+                    class="block px-3 py-2 rounded-md text-base font-medium hover:bg-secondary/50 transition">聯絡我們</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="relative min-h-screen flex items-center justify-center pt-16"
+            style="background-image: linear-gradient(135deg, var(--color-background) 0%, var(--color-primary) 100%);">
+            <div class="max-w-4xl mx-auto text-center p-8">
+                <div
+                    class="w-48 h-48 md:w-64 md:h-64 rounded-full mx-auto mb-6 bg-secondary/80 flex items-center justify-center shadow-xl">
+                    <img src="img/CUP.png" alt="早餐插圖" class="w-full h-full rounded-full object-cover shadow-xl">
+                </div>
+
+                <h1 class="text-5xl sm:text-7xl lg:text-8xl font-extrabold leading-tight text-text-dark">
+                    夏白 早餐店
+                </h1>
+                <p class="mt-4 text-xl sm:text-3xl text-gray-600 font-light">
+                    用夏白早餐，開啟美好的一天。
+                </p>
+                <div class="mt-8">
+                    <a href="#menu"
+                        class="inline-flex items-center px-8 py-3 border border-transparent text-lg font-medium rounded-full shadow-lg text-white bg-primary hover:bg-secondary hover:text-text-dark transition duration-300">
+                        查看完整菜單 &darr;
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="menu" class="py-20 bg-background/80">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-4xl font-bold text-center text-primary mb-12">☕菜單</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+                    <div
+                        class="menu-card group bg-white rounded-lg shadow-xl overflow-hidden transition duration-300 hover:shadow-2xl">
+                        <div class="h-64 overflow-hidden">
+                            <img src="img/3.png" alt="經典套餐圖片" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        </div>
+                        <h3 class="p-4 text-2xl font-bold text-center bg-primary text-white ">🍛經典套餐</h3>
+
+                        <div class="menu-detail bg-white p-6 border-t border-gray-200">
+                            <h4 class="text-xl font-bold mb-3 border-b border-secondary pb-2">經典套餐 (含中杯紅茶)</h4>
+                            <ul class="space-y-2 text-sm text-gray-700">
+                                <li class="flex justify-between"><span>火腿蛋吐司套餐</span> <span
+                                        class="font-semibold text-primary">85 元</span></li>
+                                <li class="flex justify-between"><span>培根蛋三明治套餐</span> <span
+                                        class="font-semibold text-primary">90 元</span></li>
+                                <li class="flex justify-between"><span>蘿蔔糕＋荷包蛋套餐</span> <span
+                                        class="font-semibold text-primary">80 元</span></li>
+                                <li class="flex justify-between"><span>煎蛋漢堡套餐</span> <span
+                                        class="font-semibold text-primary">95 元</span></li>
+                                <li class="flex justify-between"><span>起司蛋餅套餐</span> <span
+                                        class="font-semibold text-primary">80 元</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div
+                        class="menu-card group bg-white rounded-lg shadow-xl overflow-hidden transition duration-300 hover:shadow-2xl">
+                        <div class="h-64 overflow-hidden">
+                            <img src="img/1.png" alt="點心圖片"
+                                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        </div>
+                        <h3 class="p-4 text-2xl font-bold text-center bg-secondary text-white">🍳單點點心</h3>
+
+                        <div class="menu-detail bg-white p-6 border-t border-gray-200">
+                            <h4 class="text-xl font-bold mb-3 border-b border-primary pb-2">單點加購</h4>
+                            <ul class="space-y-2 text-sm text-gray-700">
+                                <li class="flex justify-between"><span>蘿蔔糕</span> <span
+                                        class="font-semibold text-secondary">25 元</span></li>
+                                <li class="flex justify-between"><span>蛋餅</span> <span
+                                        class="font-semibold text-secondary">25 元</span></li>
+                                <li class="flex justify-between"><span>培根</span> <span
+                                        class="font-semibold text-secondary">30 元</span></li>
+                                <li class="flex justify-between"><span>厚片吐司</span> <span
+                                        class="font-semibold text-secondary">20 元</span></li>
+                                <li class="flex justify-between"><span>小熱狗</span> <span
+                                        class="font-semibold text-secondary">20 元</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div
+                        class="menu-card group bg-white rounded-lg shadow-xl overflow-hidden transition duration-300 hover:shadow-2xl">
+                        <div class="h-64 overflow-hidden">
+                            <img src="img/CUP.png"
+                                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        </div>
+                        <h3 class="p-4 text-2xl font-bold text-center bg-primary text-white">🥤飲品</h3>
+
+                        <div class="menu-detail bg-white p-6 border-t border-gray-200">
+                            <h4 class="text-xl font-bold mb-3 border-b border-secondary pb-2">飲品系列 (冷/熱)</h4>
+                            <ul class="space-y-2 text-sm text-gray-700">
+                                <li class="flex justify-between"><span>豆漿</span> <span
+                                        class="font-semibold text-primary">20 元</span></li>
+                                <li class="flex justify-between"><span>奶茶</span> <span
+                                        class="font-semibold text-primary">25 元</span></li>
+                                <li class="flex justify-between"><span>綠茶</span> <span
+                                        class="font-semibold text-primary">25 元</span></li>
+                                <li class="flex justify-between"><span>咖啡</span> <span
+                                        class="font-semibold text-primary">30 元</span></li>
+                                <li class="flex justify-between"><span>冰紅茶</span> <span
+                                        class="font-semibold text-primary">20 元</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="recommend" class="py-20 bg-white textured-bg">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-4xl font-bold text-center text-primary mb-12">☕今日熱門推薦</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+
+                    <div
+                        class="flex flex-col items-center text-center p-6 border border-gray-200 rounded-lg shadow-md group transition duration-300 hover:shadow-xl transform hover:scale-[1.02]">
+                        <img src="img/4.png" alt="培根蛋吐司" class="w-full h-56 object-cover rounded-md mb-4 group-hover:ring-4 group-hover:ring-secondary/50 transition">
+                        <h3 class="text-3xl font-bold text-primary mb-2">🥪培根蛋吐司</h3>
+                        <p class="text-gray-600 text-lg">招牌首選！鬆軟吐司搭配嫩煎雞蛋和優質培根，經典美味不敗。</p>
+                        <span class="mt-3 text-xl font-semibold text-secondary">NT$ 40</span>
+                    </div>
+
+                    <div
+                        class="flex flex-col items-center text-center p-6 border border-gray-200 rounded-lg shadow-md group transition duration-300 hover:shadow-xl transform hover:scale-[1.02]">
+                        <img src="img/CUP.png" alt="香濃奶茶"
+                            class="w-full h-56 object-cover rounded-md mb-4 group-hover:ring-4 group-hover:ring-secondary/50 transition">
+                        <h3 class="text-3xl font-bold text-primary mb-2">🧋香濃奶茶</h3>
+                        <p class="text-gray-600 text-lg">每日現煮古早味紅茶，加入濃醇鮮奶，甜而不膩，完美搭配！</p>
+                        <span class="mt-3 text-xl font-semibold text-secondary">NT$ 25</span>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="py-20 bg-background/80">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-4xl font-bold text-primary mb-10">☕我們的理念</h2>
+
+                <div class="max-w-3xl mx-auto text-lg text-gray-700 space-y-6">
+                    <p class="text-xl font-medium">「從一份精心製作的早餐開始，讓您的每一天都充滿能量與溫暖。」</p>
+                    <p>我們堅信，簡單的食材也能帶來大大的幸福。致力於為附近的鄰里提供新鮮、健康的早點。我們堅持使用高品質的食材，現點現做，確保每一口都是最棒的滋味。</p>
+                    <p>這裡不只是填飽肚子的地點，更是您享受早晨時光的舒適角落。歡迎您來感受這份簡約與優雅！</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-4xl font-bold text-primary mb-10">聯絡我們</h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+
+                    <div class="bg-gray-100 p-4 rounded-lg shadow-md">
+                        <h3 class="text-2xl font-semibold mb-4 text-secondary">來店路線</h3>
+                        <div
+                            class="aspect-w-16 aspect-h-9 h-80 w-full bg-gray-300 flex items-center justify-center rounded-md overflow-hidden">
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d33859098.71777257!2d-12.32858730000005!3d-58.80400019999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xb09dff882a7809e1%3A0xb08d0a385dc8c7c7!2sAntarctica!5e0!3m2!1szh-TW!2stw!4v1763879948100!5m2!1szh-TW!2stw"
+                                width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
+                        </div>
+                        <p class="mt-4 text-lg text-gray-700 font-bold">地址：南極</p>
+                        <p class="text-sm text-gray-500">（近 南極科考站，從台北步行約 375天）</p>
+                    </div>
+
+                    <div class="flex flex-col justify-center items-center p-4">
+                        <h3 class="text-2xl font-semibold mb-6 text-secondary">營業資訊</h3>
+                        <div class="space-y-4 text-lg text-gray-700 w-full max-w-sm">
+                            <p class="flex items-center"><i class="fas fa-clock text-primary w-8"></i> 營業時間： 06:00
+                                -
+                                14:00 (週一至週五)</p>
+                            <p class="flex items-center"><i class="fas fa-calendar-times text-primary w-8"></i> 公休日：
+                                每週六、日</p>
+                            <p class="flex items-center"><i class="fas fa-phone text-primary w-8"></i> 電話：
+                                113080012</p>
+                            <p class="flex items-center"><i class="fas fa-envelope text-primary w-8"></i> Email：
+                                homework@example.com</p>
+                        </div>
+
+                        <h3 class="text-2xl font-semibold mt-10 mb-4 text-secondary">追蹤我們</h3>
+                        <div class="flex space-x-6">
+                            <!-- Facebook 圖片版 -->
+                            <a href="https://youtu.be/dQw4w9WgXcQ?si=YxVJYQ_M3zEEuy0D" target="_blank"
+                                class="p-4 rounded-full shadow-lg transition duration-300 flex items-center justify-center bg-gray-200 hover:bg-blue-600">
+                                <img src="img/fb.png" alt="Facebook" class="w-6 h-6">
+                            </a>
+
+                            <!-- Instagram 圖片版 -->
+                            <a href="https://youtu.be/dQw4w9WgXcQ?si=YxVJYQ_M3zEEuy0D" target="_blank"
+                                class="p-4 rounded-full shadow-lg transition duration-300 flex items-center justify-center bg-gray-200 hover:bg-pink-500">
+                                <img src="img/ig.png" alt="Instagram" class="w-6 h-6">
+                            </a>
+
+                            <!-- Line 圖片版 -->
+                            <a href="https://youtu.be/dQw4w9WgXcQ?si=YxVJYQ_M3zEEuy0D" target="_blank"
+                                class="p-4 rounded-full shadow-lg transition duration-300 flex items-center justify-center bg-gray-200 hover:bg-green-500">
+                                <img src="img/line.png" alt="Line" class="w-6 h-6">
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-primary py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
+            <p class="text-base font-medium">「為您的一天，提供最美好的開始。」</p>
+            <p class="text-xs mt-2">&copy; 2025 XX 早餐店。設計：Tailwind CSS / RWD</p>
+        </div>
+    </footer>
+
+    <script>
+        // 1. 手機漢堡選單開合功能
+        document.getElementById('menu-button').addEventListener('click', function () {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 2. 平滑滾動功能 (點擊導航連結時)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                if (this.getAttribute('href').length > 1) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+
+                    if (targetId !== '#') {
+                        document.getElementById('mobile-menu').classList.add('hidden');
+                    }
+
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 64, // 扣除固定導航列的高度
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+
+        // 3. 手機菜單提示 (由於純 CSS hover 在手機上體驗不佳，可以考慮添加一個點擊提示)
+        // const menuCards = document.querySelectorAll('.menu-card');
+        // menuCards.forEach(card => {
+        //     card.addEventListener('click', function() {
+        //         // 在手機模式下，點擊切換菜單顯示/隱藏 (如果需要的話)
+        //         if (window.innerWidth < 768) {
+        //             const detail = this.querySelector('.menu-detail');
+        //             if (detail.style.maxHeight) {
+        //                 detail.style.maxHeight = null;
+        //             } else {
+        //                 detail.style.maxHeight = '500px';
+        //             }
+        //         }
+        //     });
+        // });
+    </script>
+</body>
+
+</html>
