@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="zh-Hant">
 
 <head>
@@ -7,7 +7,7 @@
     <title>夏白早餐店 - 享受美好的早晨時光</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJg1dJmQZkI8b8rF2lE0q/lCgU6D0m9t/fPqY3i5WnJjRkI3T0E8XgJ9c5Q=="
+        xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJg1dJmQZkI8b8rF2lE0q/lCgU6D0m9t/fPqY3i5WnJjRkI3T0E8XgJ9c5Q=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <style>
@@ -23,7 +23,6 @@
         }
 
         /* 自定義背景紋理 - 使用 Base64 或外部圖片 */
-        /* 這裡使用一個輕微的點狀圖案作為佔位符，您可以替換成更優雅的紋理圖片 */
         .textured-bg {
             background-image: url(img/xv.png);
             background-repeat: repeat;
@@ -36,9 +35,25 @@
             transition: max-height 0.7s ease-in-out;
         }
 
+        /* 在非觸控裝置上，hover 仍然觸發菜單展開 */
         .menu-card:hover .menu-detail {
             max-height: 550px;
             /* 需足夠大以容納所有菜單項 */
+        }
+
+        /* 購物車側邊欄動畫 */
+        .cart-sidebar {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .cart-sidebar.open {
+            transform: translateX(0);
+        }
+
+        /* 點擊菜單卡片在手機上也能展開 (覆蓋 CSS hover) */
+        .menu-card.active .menu-detail {
+            max-height: 550px;
         }
     </style>
     <script>
@@ -62,6 +77,49 @@
 </head>
 
 <body class="bg-background textured-bg font-sans text-text-dark antialiased">
+
+    <!-- 購物車按鈕 (浮動/固定) -->
+    <button id="cart-button"
+        class="fixed bottom-6 right-6 z-50 p-4 rounded-full bg-secondary text-white shadow-xl hover:bg-primary transition duration-300 transform hover:scale-110 focus:outline-none">
+        <i class="fas fa-shopping-cart text-xl"></i>
+        <!-- 購物車數量標籤 -->
+        <span id="cart-count"
+            class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">0</span>
+    </button>
+
+    <!-- 購物車側邊欄/Modal UI -->
+    <div id="cart-sidebar"
+        class="cart-sidebar fixed top-0 right-0 w-full md:w-96 h-full bg-white z-50 shadow-2xl flex flex-col">
+        <div class="p-6 border-b border-primary/50 flex justify-between items-center">
+            <h2 class="text-2xl font-bold text-primary">🛒 您的訂單</h2>
+            <button id="close-cart-button" class="text-gray-500 hover:text-red-500 transition focus:outline-none">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+        </div>
+
+        <!-- 購物車內容區 -->
+        <div id="cart-items-container" class="flex-grow p-6 overflow-y-auto space-y-4">
+            <!-- 購物車項目將由 JS 渲染在此處 -->
+            <p id="cart-empty-message" class="text-gray-500 text-center mt-10">購物車是空的，快去點餐吧！</p>
+        </div>
+
+        <!-- 總計與結帳按鈕 -->
+        <div id="cart-footer" class="p-6 border-t border-primary/50 bg-gray-50">
+            <div class="flex justify-between items-center text-xl font-bold mb-4">
+                <span>總計:</span>
+                <span id="cart-total" class="text-secondary">NT$ 0</span>
+            </div>
+            <button id="checkout-button"
+                class="w-full py-3 rounded-lg bg-primary text-white font-semibold shadow-lg hover:bg-primary/80 transition duration-200 disabled:opacity-50"
+                disabled>
+                確認訂單並結帳
+            </button>
+            <p class="text-xs text-center text-gray-400 mt-2">（此為示範功能，實際結帳需至櫃檯）</p>
+        </div>
+    </div>
+    <!-- 購物車背景遮罩 -->
+    <div id="cart-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity"></div>
+    <!-- 購物車UI結束 -->
 
     <header id="navbar" class="fixed w-full z-50 bg-background/90 backdrop-blur-sm shadow-lg transition duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
@@ -121,115 +179,6 @@
             </div>
         </section>
 
-        <section id="menu" class="py-20 bg-background/80">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 class="text-4xl font-bold text-center text-primary mb-12">☕菜單</h2>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-
-                    <div
-                        class="menu-card group bg-white rounded-lg shadow-xl overflow-hidden transition duration-300 hover:shadow-2xl">
-                        <div class="h-64 overflow-hidden">
-                            <img src="img/3.png" alt="經典套餐圖片" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        </div>
-                        <h3 class="p-4 text-2xl font-bold text-center bg-primary text-white ">🍛經典套餐</h3>
-
-                        <div class="menu-detail bg-white p-6 border-t border-gray-200">
-                            <h4 class="text-xl font-bold mb-3 border-b border-secondary pb-2">經典套餐 (含中杯紅茶)</h4>
-                            <ul class="space-y-2 text-sm text-gray-700">
-                                <li class="flex justify-between"><span>火腿蛋吐司套餐</span> <span
-                                        class="font-semibold text-primary">85 元</span></li>
-                                <li class="flex justify-between"><span>培根蛋三明治套餐</span> <span
-                                        class="font-semibold text-primary">90 元</span></li>
-                                <li class="flex justify-between"><span>蘿蔔糕＋荷包蛋套餐</span> <span
-                                        class="font-semibold text-primary">80 元</span></li>
-                                <li class="flex justify-between"><span>煎蛋漢堡套餐</span> <span
-                                        class="font-semibold text-primary">95 元</span></li>
-                                <li class="flex justify-between"><span>起司蛋餅套餐</span> <span
-                                        class="font-semibold text-primary">80 元</span></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div
-                        class="menu-card group bg-white rounded-lg shadow-xl overflow-hidden transition duration-300 hover:shadow-2xl">
-                        <div class="h-64 overflow-hidden">
-                            <img src="img/1.png" alt="點心圖片"
-                                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        </div>
-                        <h3 class="p-4 text-2xl font-bold text-center bg-secondary text-white">🍳單點點心</h3>
-
-                        <div class="menu-detail bg-white p-6 border-t border-gray-200">
-                            <h4 class="text-xl font-bold mb-3 border-b border-primary pb-2">單點加購</h4>
-                            <ul class="space-y-2 text-sm text-gray-700">
-                                <li class="flex justify-between"><span>蘿蔔糕</span> <span
-                                        class="font-semibold text-secondary">25 元</span></li>
-                                <li class="flex justify-between"><span>蛋餅</span> <span
-                                        class="font-semibold text-secondary">25 元</span></li>
-                                <li class="flex justify-between"><span>培根</span> <span
-                                        class="font-semibold text-secondary">30 元</span></li>
-                                <li class="flex justify-between"><span>厚片吐司</span> <span
-                                        class="font-semibold text-secondary">20 元</span></li>
-                                <li class="flex justify-between"><span>小熱狗</span> <span
-                                        class="font-semibold text-secondary">20 元</span></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div
-                        class="menu-card group bg-white rounded-lg shadow-xl overflow-hidden transition duration-300 hover:shadow-2xl">
-                        <div class="h-64 overflow-hidden">
-                            <img src="img/CUP.png"
-                                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        </div>
-                        <h3 class="p-4 text-2xl font-bold text-center bg-primary text-white">🥤飲品</h3>
-
-                        <div class="menu-detail bg-white p-6 border-t border-gray-200">
-                            <h4 class="text-xl font-bold mb-3 border-b border-secondary pb-2">飲品系列 (冷/熱)</h4>
-                            <ul class="space-y-2 text-sm text-gray-700">
-                                <li class="flex justify-between"><span>豆漿</span> <span
-                                        class="font-semibold text-primary">20 元</span></li>
-                                <li class="flex justify-between"><span>奶茶</span> <span
-                                        class="font-semibold text-primary">25 元</span></li>
-                                <li class="flex justify-between"><span>綠茶</span> <span
-                                        class="font-semibold text-primary">25 元</span></li>
-                                <li class="flex justify-between"><span>咖啡</span> <span
-                                        class="font-semibold text-primary">30 元</span></li>
-                                <li class="flex justify-between"><span>冰紅茶</span> <span
-                                        class="font-semibold text-primary">20 元</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="recommend" class="py-20 bg-white textured-bg">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 class="text-4xl font-bold text-center text-primary mb-12">☕今日熱門推薦</h2>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
-
-                    <div
-                        class="flex flex-col items-center text-center p-6 border border-gray-200 rounded-lg shadow-md group transition duration-300 hover:shadow-xl transform hover:scale-[1.02]">
-                        <img src="img/4.png" alt="培根蛋吐司" class="w-full h-56 object-cover rounded-md mb-4 group-hover:ring-4 group-hover:ring-secondary/50 transition">
-                        <h3 class="text-3xl font-bold text-primary mb-2">🥪培根蛋吐司</h3>
-                        <p class="text-gray-600 text-lg">招牌首選！鬆軟吐司搭配嫩煎雞蛋和優質培根，經典美味不敗。</p>
-                        <span class="mt-3 text-xl font-semibold text-secondary">NT$ 40</span>
-                    </div>
-
-                    <div
-                        class="flex flex-col items-center text-center p-6 border border-gray-200 rounded-lg shadow-md group transition duration-300 hover:shadow-xl transform hover:scale-[1.02]">
-                        <img src="img/CUP.png" alt="香濃奶茶"
-                            class="w-full h-56 object-cover rounded-md mb-4 group-hover:ring-4 group-hover:ring-secondary/50 transition">
-                        <h3 class="text-3xl font-bold text-primary mb-2">🧋香濃奶茶</h3>
-                        <p class="text-gray-600 text-lg">每日現煮古早味紅茶，加入濃醇鮮奶，甜而不膩，完美搭配！</p>
-                        <span class="mt-3 text-xl font-semibold text-secondary">NT$ 25</span>
-                    </div>
-
-                </div>
-            </div>
-        </section>
 
         <section id="about" class="py-20 bg-background/80">
             <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -242,6 +191,62 @@
                 </div>
             </div>
         </section>
+
+
+        <!-- 菜單區塊 - 內容將由 JS 動態渲染 -->
+        <section id="menu" class="py-20 bg-background/80">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-4xl font-bold text-center text-primary mb-12">☕菜單</h2>
+
+                <div id="menu-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- 菜單分類卡片將由 JavaScript 渲染 -->
+                </div>
+            </div>
+        </section>
+        <!-- 菜單區塊結束 -->
+
+
+
+        <section id="recommend" class="py-20 bg-white textured-bg">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-4xl font-bold text-center text-primary mb-12">☕今日熱門推薦</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+
+                    <!-- 熱門推薦項目 1 -->
+                    <div
+                        class="flex flex-col items-center text-center p-6 border border-gray-200 rounded-lg shadow-md group transition duration-300 hover:shadow-xl transform hover:scale-[1.02]">
+                        <img src="img/健康全麥開放式.jfif" alt="培根蛋吐司"
+                            class="w-full h-56 object-cover rounded-md mb-4 group-hover:ring-4 group-hover:ring-secondary/50 transition">
+                        <h3 class="text-3xl font-bold text-primary mb-2">🥪培根蛋吐司</h3>
+                        <p class="text-gray-600 text-lg">招牌首選！鬆軟吐司搭配嫩煎雞蛋和優質培根，經典美味不敗。</p>
+                        <span class="mt-3 text-xl font-semibold text-secondary">NT$ 40</span>
+                        <!-- 新增：加入購物車按鈕 -->
+                        <button data-item-id="single_bacon_egg_toast" data-item-name="培根蛋吐司" data-item-price="40"
+                            class="add-to-cart-btn mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-secondary hover:bg-secondary/80 transition duration-150">
+                            <i class="fas fa-plus mr-2"></i> 加入購物車
+                        </button>
+                    </div>
+                    <!-- 熱門推薦項目 2 -->
+                    <div
+                        class="flex flex-col items-center text-center p-6 border border-gray-200 rounded-lg shadow-md group transition duration-300 hover:shadow-xl transform hover:scale-[1.02]">
+                        <img src="img/香濃奶茶.jfif" alt="香濃奶茶"
+                            class="w-full h-56 object-cover rounded-md mb-4 group-hover:ring-4 group-hover:ring-secondary/50 transition">
+                        <h3 class="text-3xl font-bold text-primary mb-2">🧋香濃奶茶</h3>
+                        <p class="text-gray-600 text-lg">每日現煮古早味紅茶，加入濃醇鮮奶，甜而不膩，完美搭配！</p>
+                        <span class="mt-3 text-xl font-semibold text-secondary">NT$ 25</span>
+                        <!-- 新增：加入購物車按鈕 -->
+                        <button data-item-id="drink_milk_tea" data-item-name="香濃奶茶" data-item-price="25"
+                            class="add-to-cart-btn mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-secondary hover:bg-secondary/80 transition duration-150">
+                            <i class="fas fa-plus mr-2"></i> 加入購物車
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+
 
         <section id="contact" class="py-20 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -312,14 +317,358 @@
         </div>
     </footer>
 
-    <script>
-        // 1. 手機漢堡選單開合功能
+
+    <!-- Firebase 腳本引入 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, writeBatch, FieldValue, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+
+        // 設定 Firebase Debug Log
+        setLogLevel('Debug');
+
+        // --- Firebase 初始化和認證 ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+
+        let app, db, auth, userId = null;
+        let isAuthReady = false;
+
+        if (Object.keys(firebaseConfig).length > 0) {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            // 處理認證
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                } else {
+                    if (typeof __initial_auth_token !== 'undefined') {
+                        await signInWithCustomToken(auth, __initial_auth_token).catch(e => {
+                            console.error("Custom Token Sign-in Failed:", e);
+                            signInAnonymously(auth); // Fallback to anonymous
+                        });
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                }
+                isAuthReady = true;
+                console.log(`Firebase Auth Ready. User ID: ${userId}`);
+            });
+        } else {
+            console.error("Firebase Configuration is missing.");
+            isAuthReady = true; // Still allow app logic to run, but storage will fail.
+        }
+
+        // --- 菜單資料結構 ---
+        const fullMenu = [
+            {
+                id: 'main_combo',
+                title: '🍛經典套餐',
+                imgSrc: 'img/培根蛋吐司享受情境.png',
+                categoryName: '經典套餐 (含中杯紅茶)',
+                items: [
+                    { id: 'combo_ham_toast', name: '火腿蛋吐司套餐', price: 85 },
+                    { id: 'combo_bacon_sandwich', name: '培根蛋三明治套餐', price: 90 },
+                    { id: 'combo_radish_cake', name: '蘿蔔糕＋荷包蛋套餐', price: 80 },
+                    { id: 'combo_omelet_burger', name: '煎蛋漢堡套餐', price: 95 },
+                    { id: 'combo_cheese_egg_roll', name: '起司蛋餅套餐', price: 80 },
+                ],
+                theme: { bgClass: 'bg-primary', detailBorder: 'border-secondary', titleColor: 'text-white' }
+            },
+            {
+                id: 'a_la_carte',
+                title: '🍳單點點心',
+                imgSrc: 'img/標準炸薯條.jfif',
+                categoryName: '單點加購',
+                items: [
+                    { id: 'single_radish_cake', name: '蘿蔔糕', price: 25 },
+                    { id: 'single_egg_roll', name: '蛋餅', price: 25 },
+                    { id: 'single_bacon', name: '培根', price: 30 },
+                    { id: 'single_thick_toast', name: '厚片吐司', price: 20 },
+                    { id: 'single_hotdog', name: '小熱狗', price: 20 },
+                ],
+                theme: { bgClass: 'bg-secondary', detailBorder: 'border-primary', titleColor: 'text-white' }
+            },
+            {
+                id: 'drinks',
+                title: '🥤飲品',
+                imgSrc: 'img/咖啡杯特寫.png',
+                categoryName: '飲品系列 (冷/熱)',
+                items: [
+                    { id: 'drink_soy', name: '豆漿', price: 20 },
+                    { id: 'drink_milk_tea', name: '奶茶', price: 25 },
+                    { id: 'drink_green_tea', name: '綠茶', price: 25 },
+                    { id: 'drink_coffee', name: '咖啡', price: 30 },
+                    { id: 'drink_iced_black_tea', name: '冰紅茶', price: 20 },
+                ],
+                theme: { bgClass: 'bg-primary', detailBorder: 'border-secondary', titleColor: 'text-white' }
+            }
+        ];
+
+        // --- 核心購物車邏輯（Firestore 互動） ---
+        const getCartCollectionRef = () => {
+            if (!userId || !db) return null;
+            // 私人購物車資料路徑: /artifacts/{appId}/users/{userId}/cartItems
+            return collection(db, `artifacts/${appId}/users/${userId}/cartItems`);
+        };
+
+        /**
+         * 將商品加入購物車或更新數量
+         * @param {string} itemId - 商品唯一 ID (Firestore document ID)
+         * @param {string} name - 商品名稱
+         * @param {number} price - 商品價格
+         */
+        const addToCart = async (itemId, name, price) => {
+            if (!isAuthReady || !userId) {
+                console.error("Auth not ready. Cannot add to cart.");
+                return;
+            }
+            const cartRef = getCartCollectionRef();
+            if (!cartRef) return;
+
+            const itemDocRef = doc(cartRef, itemId);
+
+            try {
+                // 使用交易來確保讀取和寫入的原子性
+                const itemSnap = await getDoc(itemDocRef);
+
+                if (itemSnap.exists()) {
+                    // 如果商品已存在，數量 + 1
+                    await updateDoc(itemDocRef, {
+                        quantity: increment(1)
+                    });
+                } else {
+                    // 否則，新增商品，數量為 1
+                    await setDoc(itemDocRef, {
+                        id: itemId,
+                        name: name,
+                        price: price,
+                        quantity: 1,
+                        addedAt: new Date().toISOString()
+                    });
+                }
+                showTemporaryMessage("已加入購物車！", "text-green-500");
+            } catch (error) {
+                console.error("Error adding to cart:", error);
+                showTemporaryMessage("加入購物車失敗！", "text-red-500");
+            }
+        };
+
+        /**
+         * 更改購物車內商品的數量
+         * @param {string} itemId - 商品 ID
+         * @param {number} change - 數量變化量 (+1 或 -1)
+         */
+        const updateItemQuantity = async (itemId, change) => {
+            if (!userId) return;
+            const cartRef = getCartCollectionRef();
+            if (!cartRef) return;
+
+            const itemDocRef = doc(cartRef, itemId);
+
+            try {
+                const itemSnap = await getDoc(itemDocRef);
+                if (itemSnap.exists()) {
+                    const currentQuantity = itemSnap.data().quantity || 0;
+                    const newQuantity = currentQuantity + change;
+
+                    if (newQuantity <= 0) {
+                        // 數量為 0 或更少時刪除文件
+                        await deleteDoc(itemDocRef);
+                    } else {
+                        // 更新數量
+                        await updateDoc(itemDocRef, {
+                            quantity: newQuantity
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error("Error updating cart quantity:", error);
+            }
+        };
+
+        // --- UI 渲染與事件處理 ---
+
+        const cartItemsContainer = document.getElementById('cart-items-container');
+        const cartTotalDisplay = document.getElementById('cart-total');
+        const cartCountBadge = document.getElementById('cart-count');
+        const checkoutButton = document.getElementById('checkout-button');
+        const cartEmptyMessage = document.getElementById('cart-empty-message');
+
+        /**
+         * 渲染購物車內容
+         * @param {Array<Object>} items - 購物車中的商品列表
+         */
+        const renderCart = (items) => {
+            cartItemsContainer.innerHTML = '';
+            let total = 0;
+            let totalCount = 0;
+
+            if (items.length === 0) {
+                cartItemsContainer.innerHTML = '<p class="text-gray-500 text-center mt-10">購物車是空的，快去點餐吧！</p>';
+                checkoutButton.disabled = true;
+            } else {
+                checkoutButton.disabled = false;
+                items.forEach(item => {
+                    const subtotal = item.price * item.quantity;
+                    total += subtotal;
+                    totalCount += item.quantity;
+
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm border border-gray-200';
+                    itemElement.innerHTML = `
+                        <div class="flex-grow">
+                            <p class="font-semibold text-text-dark">${item.name}</p>
+                            <p class="text-sm text-gray-500">NT$ ${item.price} x ${item.quantity}</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button data-id="${item.id}" class="cart-quantity-minus p-1 text-primary hover:text-secondary transition duration-150">
+                                <i class="fas fa-minus-circle"></i>
+                            </button>
+                            <span class="font-bold w-4 text-center">${item.quantity}</span>
+                            <button data-id="${item.id}" class="cart-quantity-plus p-1 text-primary hover:text-secondary transition duration-150">
+                                <i class="fas fa-plus-circle"></i>
+                            </button>
+                        </div>
+                    `;
+                    cartItemsContainer.appendChild(itemElement);
+                });
+            }
+
+            cartTotalDisplay.textContent = `NT$ ${total}`;
+            cartCountBadge.textContent = totalCount;
+            cartCountBadge.classList.toggle('hidden', totalCount === 0);
+        };
+
+        /**
+         * 渲染菜單網格
+         */
+        const renderMenuGrid = () => {
+            const menuGrid = document.getElementById('menu-grid');
+            menuGrid.innerHTML = '';
+
+            fullMenu.forEach(category => {
+                let itemsHtml = category.items.map(item => `
+                    <li class="flex justify-between items-center py-1 group" data-item-id="${item.id}">
+                        <span class="flex-grow">${item.name}</span>
+                        <span class="font-semibold text-text-dark mr-4">NT$ ${item.price}</span>
+                        <button data-item-id="${item.id}" data-item-name="${item.name}" data-item-price="${item.price}" 
+                                class="add-to-cart-btn p-1 text-primary border border-primary rounded-full hover:bg-primary hover:text-white transition duration-200">
+                            <i class="fas fa-plus text-xs"></i>
+                        </button>
+                    </li>
+                `).join('');
+
+                const cardHtml = `
+                    <div id="${category.id}-card" class="menu-card bg-white rounded-lg shadow-xl overflow-hidden transition duration-300 hover:shadow-2xl cursor-pointer">
+                        <div class="h-64 overflow-hidden">
+                            <img src="${category.imgSrc}" alt="${category.title.substring(1)}"
+                                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        </div>
+                        <h3 class="p-4 text-2xl font-bold text-center ${category.theme.bgClass} ${category.theme.titleColor}">
+                            ${category.title}
+                        </h3>
+
+                        <div class="menu-detail bg-white p-6 border-t border-gray-200">
+                            <h4 class="text-xl font-bold mb-3 border-b ${category.theme.detailBorder} pb-2">${category.categoryName}</h4>
+                            <ul class="space-y-2 text-sm text-gray-700">
+                                ${itemsHtml}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                menuGrid.insertAdjacentHTML('beforeend', cardHtml);
+            });
+            attachMenuEventListeners();
+        };
+
+        /**
+         * 附著事件監聽器到菜單項目上
+         */
+        const attachMenuEventListeners = () => {
+            // 點擊卡片在行動裝置上展開/收合
+            document.querySelectorAll('.menu-card').forEach(card => {
+                card.addEventListener('click', function (e) {
+                    // 如果點擊目標是購物車按鈕，則不觸發展開/收合
+                    if (e.target.closest('.add-to-cart-btn')) return;
+
+                    // 僅在小螢幕上或沒有 hover 效果時切換 active class
+                    if (window.innerWidth < 768) {
+                        this.classList.toggle('active');
+                    }
+                });
+            });
+
+            // 加入購物車按鈕事件
+            document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const id = this.getAttribute('data-item-id');
+                    const name = this.getAttribute('data-item-name');
+                    const price = parseInt(this.getAttribute('data-item-price'));
+                    if (id && name && !isNaN(price)) {
+                        addToCart(id, name, price);
+                    }
+                });
+            });
+        };
+
+        /**
+         * 附著購物車內部事件監聽器（因為內容動態渲染，需要依賴事件委派）
+         */
+        cartItemsContainer.addEventListener('click', (e) => {
+            const minusButton = e.target.closest('.cart-quantity-minus');
+            const plusButton = e.target.closest('.cart-quantity-plus');
+
+            if (minusButton) {
+                const itemId = minusButton.getAttribute('data-id');
+                updateItemQuantity(itemId, -1);
+            } else if (plusButton) {
+                const itemId = plusButton.getAttribute('data-id');
+                updateItemQuantity(itemId, 1);
+            }
+        });
+
+        // 彈出訊息提示 (取代 alert)
+        const showTemporaryMessage = (message, colorClass) => {
+            const tempDiv = document.createElement('div');
+            tempDiv.className = `fixed top-20 left-1/2 transform -translate-x-1/2 p-3 rounded-lg shadow-2xl bg-white border-2 ${colorClass} font-bold z-50 transition-opacity duration-300`;
+            tempDiv.textContent = message;
+            document.body.appendChild(tempDiv);
+            setTimeout(() => {
+                tempDiv.style.opacity = '0';
+                tempDiv.addEventListener('transitionend', () => tempDiv.remove());
+            }, 1500);
+        };
+
+        // --- 視圖控制與滾動功能（來自您的原始程式碼） ---
+        const cartSidebar = document.getElementById('cart-sidebar');
+        const cartOverlay = document.getElementById('cart-overlay');
+
+        document.getElementById('cart-button').addEventListener('click', () => {
+            cartSidebar.classList.add('open');
+            cartOverlay.classList.remove('hidden');
+        });
+
+        document.getElementById('close-cart-button').addEventListener('click', () => {
+            cartSidebar.classList.remove('open');
+            cartOverlay.classList.add('hidden');
+        });
+
+        cartOverlay.addEventListener('click', () => {
+            cartSidebar.classList.remove('open');
+            cartOverlay.classList.add('hidden');
+        });
+
+        // 原有功能：手機漢堡選單開合功能
         document.getElementById('menu-button').addEventListener('click', function () {
             const mobileMenu = document.getElementById('mobile-menu');
             mobileMenu.classList.toggle('hidden');
         });
 
-        // 2. 平滑滾動功能 (點擊導航連結時)
+        // 原有功能：平滑滾動功能 (點擊導航連結時)
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 if (this.getAttribute('href').length > 1) {
@@ -341,21 +690,43 @@
             });
         });
 
-        // 3. 手機菜單提示 (由於純 CSS hover 在手機上體驗不佳，可以考慮添加一個點擊提示)
-        // const menuCards = document.querySelectorAll('.menu-card');
-        // menuCards.forEach(card => {
-        //     card.addEventListener('click', function() {
-        //         // 在手機模式下，點擊切換菜單顯示/隱藏 (如果需要的話)
-        //         if (window.innerWidth < 768) {
-        //             const detail = this.querySelector('.menu-detail');
-        //             if (detail.style.maxHeight) {
-        //                 detail.style.maxHeight = null;
-        //             } else {
-        //                 detail.style.maxHeight = '500px';
-        //             }
-        //         }
-        //     });
-        // });
+        // --- 應用程式初始化 ---
+        window.onload = function () {
+            renderMenuGrid();
+
+            // 啟動 Firestore 購物車即時監聽器
+            const startCartListener = () => {
+                if (!isAuthReady || !userId || !db) {
+                    setTimeout(startCartListener, 100); // Wait for auth
+                    return;
+                }
+
+                const cartRef = getCartCollectionRef();
+                if (cartRef) {
+                    onSnapshot(cartRef, (snapshot) => {
+                        const cartItems = [];
+                        snapshot.forEach(doc => {
+                            // Firestore 文件 ID 作為 item.id
+                            cartItems.push({ id: doc.id, ...doc.data() });
+                        });
+                        // 確保購物車列表按照加入時間排序 (雖然 Firestore 已經是按 ID 排序)
+                        cartItems.sort((a, b) => (a.addedAt > b.addedAt) ? 1 : -1);
+                        renderCart(cartItems);
+                    }, (error) => {
+                        console.error("Firestore Cart Listener Failed:", error);
+                        // 在錯誤時顯示空購物車
+                        renderCart([]);
+                    });
+                }
+            };
+
+            // 確保 Firebase 認證完成後再啟動監聽器
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    startCartListener();
+                }
+            });
+        };
     </script>
 </body>
 
